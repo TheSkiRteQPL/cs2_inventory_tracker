@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pl" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CS2 Inventory Tracker{% endblock %}</title>
+
+    <!-- Bootstrap 5.3.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Meta tags -->
+    <meta name="description" content="Śledź wartość swojego inwentarza CS2, analizuj trendy cenowe i otrzymuj alerty o zmianach cen.">
+    <meta name="keywords" content="CS2, Counter-Strike 2, inventory, tracker, ceny, skiny">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+        <!-- Navigation -->
+        {% include 'components/navbar.html' %}
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                    {% include 'components/sidebar.html' %}
+                </div>
+
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
+        </div>
+    {% else %}
+        <!-- Unauthenticated layout -->
+        <div class="container-fluid">
+            {% block auth_content %}{% endblock %}
+        </div>
+    {% endif %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                {% for category, message in messages %}
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            {% if category == 'success' %}
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <strong class="me-auto">Sukces</strong>
+                            {% elif category == 'error' %}
+                                <i class="bi bi-exclamation-circle-fill text-danger me-2"></i>
+                                <strong class="me-auto">Błąd</strong>
+                            {% elif category == 'warning' %}
+                                <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                                <strong class="me-auto">Ostrzeżenie</strong>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill text-info me-2"></i>
+                                <strong class="me-auto">Informacja</strong>
+                            {% endif %}
+                            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Ładowanie...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
